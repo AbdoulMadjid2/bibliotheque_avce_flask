@@ -10,27 +10,31 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h3>Modifier un Auteur</h3>
-    <form id="formModiAuteur" data-id="{{ auteur._id }}">
-        
-        <div class="mb-3">
-            <label>Nom</label>
-            <input type="text" name="nom" value="{{ auteur.nom }}" class="form-control" required>
+    <div class="card">
+	    <div class="card-body">
+            <h3>Modifier un Auteur</h3>
+            <form id="formModiAuteur" data-id="{{ auteur._id }}">
+                
+                <div class="mb-3">
+                    <label>Nom</label>
+                    <input class="form-control form-control-lg" type="text" name="nom" value="{{ auteur.nom }}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>Prénom</label>
+                    <input class="form-control form-control-lg" type="text" name="prenom" value="{{ auteur.prenom }}" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Nationalité</label>
+                    <input class="form-control form-control-lg" type="text" name="nationalite" value="{{ auteur.nationalite }}" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Date de naissance</label>
+                    <input class="form-control form-control-lg" type="date" name="date_naissance" value="{{ auteur.date_naissance }}" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            </form>
         </div>
-        <div class="mb-3">
-            <label>Prénom</label>
-            <input type="text" name="prenom" value="{{ auteur.prenom }}" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label>Nationalité</label>
-            <input type="text" name="nationalite" value="{{ auteur.nationalite }}" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label>Date de naissance</label>
-            <input type="date" name="date_naissance" value="{{ auteur.date_naissance }}" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-primary">Mettre à jour</button>
-    </form>
+    </div>
 </div>
 </body>
 </html>

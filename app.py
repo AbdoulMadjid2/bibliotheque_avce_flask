@@ -3,6 +3,10 @@ from functools import wraps
 from werkzeug.security import check_password_hash
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from werkzeug.security import generate_password_hash
+from bson import ObjectId
+from flask import jsonify
+from flask import render_template
 
 app = Flask(__name__)
 app.secret_key = "cle_secrete_bibliotheque_2026"
@@ -46,13 +50,10 @@ def login_required(f):
 def dashboard():
     nb_livres = db.livres.count_documents({})
     nb_auteurs = db.auteurs.count_documents({})
+    nb_adherents = db.adherents.count_documents({})
 
     nb_emprunts_en_cours = db.emprunts.count_documents({
-        "statut": "En cours"
-    })
-
-    nb_emprunts_retard = db.emprunts.count_documents({
-        "statut": "En retard"
+        "statut": {"$ne": "Retourné"}
     })
     
 
@@ -61,7 +62,7 @@ def dashboard():
         nb_livres=nb_livres,
         nb_auteurs=nb_auteurs,
         nb_emprunts_en_cours=nb_emprunts_en_cours,
-        nb_emprunts_retard=nb_emprunts_retard
+        nb_adherents=nb_adherents 
     )
 
 @app.route("/auteurs")
@@ -70,6 +71,7 @@ def liste_auteurs():
     data = auteurs.find()
     return render_template("auteurs/index.html", auteurs=data)
 @app.route("/auteurs/ajouter", methods=["GET", "POST"])
+@login_required
 def ajouter_auteur():
     if request.method == "POST":
         auteurs.insert_one({
@@ -81,9 +83,6 @@ def ajouter_auteur():
         return jsonify(success=True)
 
     return render_template("auteurs/ajouter.html")
-
-from flask import jsonify
-from bson.objectid import ObjectId
 
 @app.route("/auteurs/modifier/<id>", methods=["GET", "POST"])
 @login_required
@@ -162,9 +161,8 @@ def ajouter_adherent():
             "telephone": request.form["telephone"],
             "adresse": request.form["adresse"]
         })
-        return redirect(url_for("liste_adherents"))
+        return jsonify(success=True)
     return render_template("adherents/ajouter.html")
-from bson import ObjectId
 
 @app.route("/adherents/modifier/<id>", methods=["GET", "POST"])
 @login_required
@@ -172,28 +170,28 @@ def modifier_adherent(id):
     adherent = db.adherents.find_one({"_id": ObjectId(id)})
 
     if request.method == "POST":
-        db.adherents.update_one(
+        result = db.adherents.update_one(
             {"_id": ObjectId(id)},
             {"$set": {
-                "nom": request.form["nom"],
-                "prenom": request.form["prenom"],
-                "email": request.form["email"],
+                "nom": request.form.get("nom"),
+                "prenom": request.form.get("prenom"),
+                "email": request.form.get("email"),
                 "telephone": request.form.get("telephone"),
                 "adresse": request.form.get("adresse")
             }}
         )
-        return redirect(url_for("liste_adherents"))
+
+        return jsonify(success=result.modified_count == 1)
 
     return render_template("adherents/modifier.html", adherent=adherent)
 
-@app.route("/adherents/supprimer/<id>")
+
+@app.route("/adherents/supprimer/<id>", methods=["POST"])
 @login_required
 def supprimer_adherent(id):
-    db.adherents.delete_one({"_id": ObjectId(id)})
-    return redirect(url_for("liste_adherents"))
+    result = db.adherents.delete_one({"_id": ObjectId(id)})
+    return jsonify(success=result.deleted_count == 1)
 
-from bson import ObjectId
-from flask import render_template
 
 @app.route("/livres")
 @login_required
@@ -234,7 +232,7 @@ def ajouter_livre():
             "categorie_id": ObjectId(request.form["idCategorie"]),
             "auteurs": [ObjectId(request.form["auteurs"])]
         })
-        return redirect(url_for("liste_livres"))
+        return jsonify(success=True)
 
     return render_template("livres/ajouter.html", categories=categories, auteurs=auteurs )
 
@@ -242,30 +240,37 @@ def ajouter_livre():
 @login_required
 def modifier_livre(id):
     livre = db.livres.find_one({"_id": ObjectId(id)})
-    categories = db.categories.find()
-    auteurs = db.auteurs.find()
+    categories = list(db.categories.find())
+    auteurs = list(db.auteurs.find())
 
     if request.method == "POST":
-        db.livres.update_one(
+        update_data = {
+            "titre": request.form.get("titre"),
+            "annee": request.form.get("annee"),
+            "nbExemplaires": int(request.form.get("nbExemplaires", 1))
+        }
+
+        if request.form.get("idCategorie"):
+            update_data["categorie_id"] = ObjectId(request.form["idCategorie"])
+        else:
+            update_data["categorie_id"] = None
+
+        if request.form.get("auteur_id"):
+            update_data["auteurs"] = [ObjectId(request.form["auteur_id"])]
+
+        result = db.livres.update_one(
             {"_id": ObjectId(id)},
-            {"$set": {
-                "titre": request.form["titre"],
-                "annee": request.form.get("annee"),
-                "nbExemplaires": int(request.form.get("nbExemplaires", 1)),
-                "description": request.form.get("description"),
-                "categorie_id": ObjectId(request.form["idCategorie"])
-                                if request.form.get("idCategorie") else None
-            }}
+            {"$set": update_data}
         )
-        return redirect(url_for("liste_livres"))
+
+        return jsonify(success=result.modified_count == 1)
 
     return render_template("livres/modifier.html", livre=livre, categories=categories, auteurs=auteurs)
-@app.route("/livres/supprimer/<id>")
+@app.route("/livres/supprimer/<id>", methods=["POST"])
 @login_required
 def supprimer_livre(id):
-    db.livres.delete_one({"_id": ObjectId(id)})
-    return redirect(url_for("liste_livres"))
-
+    result = db.livres.delete_one({"_id": ObjectId(id)})
+    return jsonify(success=result.deleted_count == 1)
 from datetime import date
 
 @app.route("/emprunts")
@@ -323,24 +328,6 @@ def retourner_livre(id):
     )
 
     return jsonify(success=result.modified_count == 1)
-
-
-from werkzeug.security import generate_password_hash
-
-def creer_admin_par_defaut():
-    admin = db.users.find_one({"login": "admin"})
-
-    if admin:
-        print("✔ Admin déjà existant")
-        return
-
-    db.users.insert_one({
-        "login": "admin",
-        "password": generate_password_hash("admin123"),
-        "role": "Admin"
-    })
-
-    print("✅ Utilisateur admin créé (login: admin / mdp: admin123)")
 
 
 if __name__ == "__main__":

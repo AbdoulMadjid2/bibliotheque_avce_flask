@@ -8,39 +8,43 @@
 </head>
 <body>
     <div class="container">
-         <form id="AjoutEmprunt">
+        <div class="card">
+		    <div class="card-body">
+                <form id="AjoutEmprunt">
 
-                <div class="mb-3">
-                    <label class="form-label">Adhérent</label>
-                    <select class="form-select" name="idAdherent" required>
-                        {% for a in adherents %}
-                        <option value="{{ a._id }}">
-                            {{ a.nom }} {{ a.prenom }}
-                        </option>
-                        {% endfor %}
-                    </select>
+                        <div class="mb-3">
+                            <label class="form-label">Adhérent</label>
+                            <select class="form-select" name="idAdherent" required>
+                                {% for a in adherents %}
+                                <option value="{{ a._id }}">
+                                    {{ a.nom }} {{ a.prenom }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Livre</label>
+                            <select  class="form-select" name="idLivre" required>
+                                {% for l in livres %}
+                                <option value="{{ l._id }}">
+                                    {{ l.titre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Date de retour prévue</label>
+                            <input class="form-control form-control-lg" type="date" class="form-control" name="dateRetourPrevue" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Enregistrer l’emprunt
+                        </button>
+                    </form>
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Livre</label>
-                    <select class="form-select" name="idLivre" required>
-                        {% for l in livres %}
-                        <option value="{{ l._id }}">
-                            {{ l.titre }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Date de retour prévue</label>
-                    <input type="date" class="form-control" name="dateRetourPrevue" required>
-                </div>
-
-                <button type="submit" class="btn btn-primary">
-                    Enregistrer l’emprunt
-                </button>
-            </form>
+            </div>
     </div>
 
 

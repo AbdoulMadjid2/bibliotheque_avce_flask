@@ -11,10 +11,10 @@
 </head>
 <body>
 <div class="container mt-4">
-    <div class="d-flex justify-content-between mb-3">
-        <h3>Gestion des Livres</h3>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalAjouter" data-bs-whatever="@mdo">+ Ajouter Un livre</button>
-    </div>
+    <h3>Gestion des Livres</h3>
+        <div class="d-flex justify-content-between mb-3">
+            <button type="button" class="btn btn-primary" onclick="loadPage('/livres/ajouter')">+ Ajouter Un Livre</button>
+        </div>
 
     <table class="table table-bordered table-striped">
         <thead>
@@ -36,9 +36,8 @@
                 <td>{{ l.categorie[0].libelle if l.categorie }}</td>
                 <td> {% for a in l.auteurs_details %} {{ a.nom }} {{ a.prenom }}<br>{% endfor %}</td>
                 <td>
-                    <a href="{{ url_for('modifier_livre', id=l._id) }}" class="btn btn-success btn-sm " data-bs-toggle="modal" data-bs-target="#ModalModifier" data-bs-whatever="@mdo">Modifier</a>
-                    <a href="{{ url_for('supprimer_livre', id=l._id) }}" class="btn btn-danger btn-sm"
-                    onclick="return confirm('Voulez-vous vraiment supprimer ce livre ?');">Supprimer</a>
+                   <button class="btn btn-success btn-sm" onclick="loadPage('/livres/modifier/{{ l._id }}')">Modifier</button>
+                    <button class="btn btn-danger btn-sm btn-supprimer-livre" data-id="{{ l._id }}">Supprimer</button>
                 </td>
             </tr>
         {% endfor %}

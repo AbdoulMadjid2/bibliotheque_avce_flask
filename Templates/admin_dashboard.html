@@ -103,23 +103,23 @@
 
     <div class="sidebar">
             <a href="#" onclick="loadPage('/auteurs')">
-                <div class="title"><i class="fas fa-book me-2"></i> Gestion d'auteurs</div>
+                <div class="title"><i class="fas fa-user-tie me-2"></i> Gestion d'auteurs</div>
             </a>
 
             <a href="#" onclick="loadPage('/emprunts')">
-                <div class="title"><i class="fas fa-chalkboard-teacher me-2"></i> Gestion des Emprunts</div>
+                <div class="title"><i class="fas fa-book-open me-2"></i> Gestion des Emprunts</div>
             </a>
 
             <a href="#" onclick="loadPage('/categories')">
-                <div class="title"><i class="fas fa-user-graduate me-2"></i> Gestion des catégories</div>
+                <div class="title"><i class="fas fa-tags me-2"></i> Catégories</div>
             </a>
 
             <a href="#" onclick="loadPage('/livres')">
-                <div class="title"><i class="fas fa-chalkboard me-2"></i> Gestion des livres</div>
+                <div class="title"><i class="fas fa-book me-2"></i> Gestion des livres</div>
             </a>
 
             <a href="#" onclick="loadPage('/adherents')">
-                <div class="title"><i class="fas fa-calendar-alt me-2"></i> Gestion d'adhérents</div>
+                <div class="title"><i class="fas fa-user-graduate me-2"></i> Gestion d'adhérents</div>
             </a>
 
     </div>
@@ -143,16 +143,16 @@
             </div>
             <div class="col-md-3">
                 <div class="card p-3 text-center">
-                    <i class="fas fa-book"></i>
+                    <i class="fas  fa-book-reader"></i>
                     <h5 class="mt-2">Emprunts en cours</h5>
-                    <div class="number"><h3>nb_emprunts_en_cours</h3></div>
+                    <div class="number"><h3>{{ nb_emprunts_en_cours }}</h3></div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card p-3 text-center">
-                    <i class="fas fa-book"></i>
-                    <h5 class="mt-2">Emprunts en retard</h5>
-                    <div class="number"><h3>nb_emprunts_retard</h3></div>
+                    <i class="fas fa-user-graduate"></i>
+                    <h5 class="mt-2">Adhérents</h5>
+                    <div class="number"><h3>{{nb_adherents}}</h3></div>
                 </div>
             </div>
             
@@ -367,7 +367,137 @@
             .catch(err => console.error(err));
         }
     });
-        
+
+    document.addEventListener("submit", function (e) {
+            if (e.target && e.target.id === "LivAjout") {
+                e.preventDefault();
+
+                fetch("/livres/ajouter", {
+                    method: "POST",
+                    body: new FormData(e.target)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadPage("/livres");
+                    }
+                })
+                .catch(err => console.error(err));
+            }
+        });
+        document.addEventListener("submit", function (e) {
+            if (e.target && e.target.id === "formModifLivre") {
+                e.preventDefault();
+
+                const id = e.target.dataset.id;
+                if (!id) {
+                    console.error("ID livre manquant");
+                    return;
+                }
+
+                fetch(`/livres/modifier/${id}`, {
+                    method: "POST",
+                    body: new FormData(e.target)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadPage("/livres");
+                    } else {
+                        alert("Échec de la modification");
+                    }
+                })
+                .catch(err => console.error(err));
+            }
+        });
+       document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("btn-supprimer-livre")) {
+                const id = e.target.dataset.id;
+
+                if (!confirm("Voulez-vous vraiment supprimer ce livre ?")) return;
+
+                fetch(`/livres/supprimer/${id}`, {
+                    method: "POST"
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadPage("/livres");
+                    } else {
+                        alert("Suppression impossible");
+                    }
+                })
+                .catch(err => console.error(err));
+            }
+        });
+
+
+        document.addEventListener("submit", function (e) {
+            if (e.target && e.target.id === "AdhAjout") {
+                e.preventDefault();
+
+                fetch("/adherents/ajouter", {
+                    method: "POST",
+                    body: new FormData(e.target)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadPage("/adherents");
+                    }
+                })
+                .catch(err => console.error(err));
+            }
+        });
+
+        document.addEventListener("submit", function (e) {
+            if (e.target && e.target.id === "formModifAdherent") {
+                e.preventDefault();
+
+                const id = e.target.dataset.id;
+                if (!id) {
+                    console.error("ID adhérent manquant");
+                    return;
+                }
+
+                fetch(`/adherents/modifier/${id}`, {
+                    method: "POST",
+                    body: new FormData(e.target)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadPage("/adherents");
+                    } else {
+                        alert("Échec de la modification");
+                    }
+                })
+                .catch(err => console.error(err));
+            }
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("btn-supprimer-adherent")) {
+                const id = e.target.dataset.id;
+
+                if (!confirm("Voulez-vous vraiment supprimer cet adhérent ?")) return;
+
+                fetch(`/adherents/supprimer/${id}`, {
+                    method: "POST"
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadPage("/adherents");
+                    } else {
+                        alert("Suppression échouée");
+                    }
+                })
+                .catch(err => console.error(err));
+            }
+        });
+
+                
 
     </script>
     

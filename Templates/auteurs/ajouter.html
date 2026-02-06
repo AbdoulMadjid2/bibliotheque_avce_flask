@@ -12,25 +12,29 @@
 </head>
 <body>
 <div class="container mt-4">
-    <form id="formAjoutAuteur">
-        <div class="mb-3">
-            <label>Nom</label>
-            <input type="text" name="nom" class="form-control" required>
+    <div class="card">
+		<div class="card-body">
+            <form id="formAjoutAuteur">
+                <div class="mb-3">
+                    <label>Nom</label>
+                    <input type="text" name="nom" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>Prénom</label>
+                    <input class="form-control form-control-lg" type="text" name="prenom" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Nationalité</label>
+                    <input  class="form-control form-control-lg" type="text" name="nationalite" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Date de naissance</label>
+                    <input  class="form-control form-control-lg" type="date" name="date_naissance" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </form>
         </div>
-        <div class="mb-3">
-            <label>Prénom</label>
-            <input type="text" name="prenom" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label>Nationalité</label>
-            <input type="text" name="nationalite" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label>Date de naissance</label>
-            <input type="date" name="date_naissance" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-success">Enregistrer</button>
-    </form>
+    </div>
 </div>
 
 

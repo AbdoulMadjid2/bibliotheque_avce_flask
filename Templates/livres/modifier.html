@@ -11,26 +11,26 @@
 <div class="container mt-4">
     <h4>Modifier un livre</h4>
 
-    <form method="POST">
+    <form id="formModifLivre" data-id="{{ livre._id }}">
         <div class="mb-3">
             <label class="form-label">Titre</label>
             <input type="text" name="titre" class="form-control"
-                   value="{{ livre.titre }}" required>
+                value="{{ livre.titre }}" required>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Année</label>
             <input type="number" name="annee" class="form-control"
-                   value="{{ livre.annee }}">
+                value="{{ livre.annee }}">
         </div>
 
         <div class="mb-3">
             <label class="form-label">Auteur</label>
-            <select name="auteurs" class="form-select">
+            <select name="auteur_id" class="form-select">
                 <option value="">-- Sélectionner un auteur --</option>
                 {% for a in auteurs %}
                     <option value="{{ a._id }}"
-                        {% if livre.auteurs and a._id == livre.auteurs[0] %}selected{% endif %}>
+                        {% if livre.auteurs and a._id = livre.auteurs[0] %}selected{% endif %}>
                         {{ a.nom }} {{ a.prenom }}
                     </option>
                 {% endfor %}
@@ -40,7 +40,7 @@
         <div class="mb-3">
             <label class="form-label">Nombre d'exemplaires</label>
             <input type="number" name="nbExemplaires" class="form-control"
-                   value="{{ livre.nbExemplaires }}">
+                value="{{ livre.nbExemplaires }}">
         </div>
 
         <div class="mb-3">
@@ -49,16 +49,18 @@
                 <option value="">-- Sélectionner --</option>
                 {% for c in categories %}
                     <option value="{{ c._id }}"
-                        {% if livre.categorie_id == c._id %}selected{% endif %}>
+                        {% if livre.categorie_id = c._id %}selected{% endif %}>
                         {{ c.libelle }}
                     </option>
                 {% endfor %}
             </select>
         </div>
 
-        <button class="btn btn-warning">Modifier</button>
-        <a href="{{ url_for('liste_livres') }}" class="btn btn-secondary">Annuler</a>
+        <button type="submit" class="btn btn-warning">Modifier</button>
+        <button type="button" class="btn btn-secondary"
+                onclick="loadPage('/livres')">Annuler</button>
     </form>
+
 </div>
 
 </body>

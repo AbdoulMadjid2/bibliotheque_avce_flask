@@ -12,14 +12,8 @@ include("../../traitement.php");
     <script src="../../assets/bootstrap-icons/fonts/bootstrap-icons.woff"></script>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-           <div class="container-fluid">
-            	<a class="navbar-brand" href="#" style="font-size: 25px;">Bibliothèque Massani</a>
-                        
-         </div>
-  </nav>
 <div class="container mt-4">
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalAjouter" data-bs-whatever="@mdo">+ Ajouter Un Adhérent</button>
+        <button type="button" class="btn btn-primary" onclick="loadPage('/adherents/ajouter')">+ Ajouter Un Adhérent</button>
     <table class="table table-bordered table-striped mt-3">
         <thead>
             <tr>
@@ -40,8 +34,8 @@ include("../../traitement.php");
                 <td>{{ a.telephone }}</td>
                 <td>{{ a.adresse }}</td>
                 <td>
-                    <a href="{{ url_for('modifier_adherent', id=a._id) }}" class="btn btn-warning btn-sm">Modifier</a>
-                    <a href="{{ url_for('supprimer_adherent', id=a._id) }}" onclick="return confirm('Voulez-vous vraiment supprimer cet adhérent ?');" class="btn btn-danger btn-sm">Supprimer</a>
+                    <button class="btn btn-success btn-sm" onclick="loadPage('/adherents/modifier/{{ a._id }}')">Modifier</button>
+                    <button class="btn btn-danger btn-sm btn-supprimer-adherent" data-id="{{ a._id }}">Supprimer</button>
                 </td>
             </tr>
             {% endfor %}
